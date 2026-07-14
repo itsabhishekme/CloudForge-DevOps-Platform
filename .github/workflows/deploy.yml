@@ -1,0 +1,27 @@
+name: Docker Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build Frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/frontend
+          push: false
+          tags: cloudforge/frontend:latest
+
+      - name: Build Backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/backend
+          push: false
+          tags: cloudforge/backend:latest
