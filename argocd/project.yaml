@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: cloudforge
+  namespace: argocd
+
+spec:
+  description: CloudForge DevOps Platform GitOps Project
+
+  sourceRepos:
+    - "https://github.com/itsabhishekme/CloudForge-DevOps-Platform.git"
+
+  destinations:
+    - namespace: cloudforge
+      server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  orphanedResources:
+    warn: true
+
+  roles:
+    - name: admin
+      description: CloudForge Project Administrator
+
+      policies:
+        - p, proj:cloudforge:admin, applications, *, cloudforge/*, allow
+        - p, proj:cloudforge:admin, repositories, get, *, allow
+        - p, proj:cloudforge:admin, logs, get, cloudforge/*, allow
+        - p, proj:cloudforge:admin, exec, create, cloudforge/*, allow
+
+      groups:
+        - cloudforge-admins
+
+  syncWindows:
+    - kind: allow
+      schedule: "* * * * *"
+      duration: 24h
+      applications:
+        - "*"
+      manualSync: true

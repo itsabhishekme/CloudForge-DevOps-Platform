@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudforge-devops-platform
+  namespace: argocd
+  labels:
+    app: cloudforge
+    environment: production
+spec:
+  project: default
+
+  source:
+    repoURL: "https://github.com/itsabhishekme/CloudForge-DevOps-Platform.git"
+    targetRevision: main
+    path: kubernetes
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: cloudforge
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+
+  revisionHistoryLimit: 10
+
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
