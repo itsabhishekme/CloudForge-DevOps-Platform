@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cloudforge-backend
+  namespace: cloudforge
+
+  labels:
+    app: cloudforge-backend
+    tier: backend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: cloudforge-backend
+
+  template:
+    metadata:
+      labels:
+        app: cloudforge-backend
+        tier: backend
+
+    spec:
+      containers:
+        - name: backend
+
+          image: cloudforge/backend:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 5000
+
+          env:
+            - name: NODE_ENV
+              value: production
+
+            - name: PORT
+              value: "5000"
+
+            - name: CLIENT_URL
+              value: "http://cloudforge.local"
+
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: cloudforge-secret
+                  key: mongo-uri
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+      restartPolicy: Always

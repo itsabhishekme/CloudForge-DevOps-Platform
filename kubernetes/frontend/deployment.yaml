@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cloudforge-frontend
+  namespace: cloudforge
+
+  labels:
+    app: cloudforge-frontend
+    component: frontend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: cloudforge-frontend
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
+  template:
+    metadata:
+      labels:
+        app: cloudforge-frontend
+        component: frontend
+
+    spec:
+      containers:
+        - name: frontend
+
+          image: cloudforge/frontend:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 3000
+
+          env:
+            - name: NODE_ENV
+              value: "production"
+
+            - name: PORT
+              value: "3000"
+
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://cloudforge-backend:5000/api"
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+      restartPolicy: Always
