@@ -1,0 +1,72 @@
+# ==========================================================
+# CloudForge DevOps Platform
+# Kibana Configuration
+# ==========================================================
+
+# ------------------------------------------
+# Server Configuration
+# ------------------------------------------
+server.name: cloudforge-kibana
+server.host: "0.0.0.0"
+server.port: 5601
+server.publicBaseUrl: "http://localhost:5601"
+
+# ------------------------------------------
+# Elasticsearch
+# ------------------------------------------
+elasticsearch.hosts:
+  - "http://elasticsearch:9200"
+
+elasticsearch.username: "elastic"
+elasticsearch.password: "elastic123"
+
+# ------------------------------------------
+# Monitoring
+# ------------------------------------------
+monitoring.ui.container.elasticsearch.enabled: true
+
+# ------------------------------------------
+# Logging
+# ------------------------------------------
+logging.root.level: info
+
+# ------------------------------------------
+# Localization
+# ------------------------------------------
+i18n.locale: "en"
+
+# ------------------------------------------
+# Telemetry
+# ------------------------------------------
+telemetry.enabled: false
+
+# ------------------------------------------
+# Security
+# ------------------------------------------
+xpack.security.enabled: false
+
+# ------------------------------------------
+# Reporting
+# ------------------------------------------
+xpack.reporting.enabled: true
+
+# ------------------------------------------
+# Saved Objects
+# ------------------------------------------
+savedObjects.maxImportExportSize: 10000
+savedObjects.maxImportPayloadBytes: 26214400
+
+# ------------------------------------------
+# Dashboard Settings
+# ------------------------------------------
+map.includeElasticMapsService: false
+
+# ------------------------------------------
+# Index Pattern
+# ------------------------------------------
+kibana.defaultAppId: "dashboard"
+
+# ------------------------------------------
+# Newsfeed
+# ------------------------------------------
+newsfeed.enabled: false

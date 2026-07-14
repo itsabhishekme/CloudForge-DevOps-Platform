@@ -1,0 +1,59 @@
+# ==========================================================
+# CloudForge DevOps Platform
+# Logstash Configuration
+# ==========================================================
+
+# ------------------------------------------
+# Node
+# ------------------------------------------
+node.name: cloudforge-logstash
+
+# ------------------------------------------
+# Data & Logs
+# ------------------------------------------
+path.data: /usr/share/logstash/data
+path.logs: /usr/share/logstash/logs
+
+# ------------------------------------------
+# HTTP API
+# ------------------------------------------
+api.enabled: true
+api.http.host: "0.0.0.0"
+api.http.port: 9600
+
+# ------------------------------------------
+# Pipeline
+# ------------------------------------------
+path.config: /usr/share/logstash/pipeline
+
+pipeline.workers: 2
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+
+# ------------------------------------------
+# Monitoring
+# ------------------------------------------
+monitoring.enabled: false
+
+# ------------------------------------------
+# Dead Letter Queue
+# ------------------------------------------
+dead_letter_queue.enable: true
+
+# ------------------------------------------
+# Queue
+# ------------------------------------------
+queue.type: memory
+
+# ------------------------------------------
+# Logging
+# ------------------------------------------
+log.level: info
+
+config.reload.automatic: true
+config.reload.interval: 5s
+
+# ------------------------------------------
+# X-Pack
+# ------------------------------------------
+xpack.monitoring.enabled: false

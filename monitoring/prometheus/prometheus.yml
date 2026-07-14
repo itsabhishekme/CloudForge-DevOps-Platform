@@ -1,0 +1,150 @@
+# ==========================================================
+# CloudForge DevOps Platform
+# Prometheus Configuration
+# ==========================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+  external_labels:
+    project: cloudforge-devops-platform
+    environment: development
+
+rule_files: []
+
+scrape_configs:
+
+  # ========================================================
+  # Prometheus
+  # ========================================================
+  - job_name: prometheus
+
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  # ========================================================
+  # Backend API
+  # ========================================================
+  - job_name: backend
+
+    metrics_path: /metrics
+
+    static_configs:
+      - targets:
+          - backend:5000
+
+  # ========================================================
+  # Frontend
+  # ========================================================
+  - job_name: frontend
+
+    metrics_path: /metrics
+
+    static_configs:
+      - targets:
+          - frontend:3000
+
+  # ========================================================
+  # Node Exporter
+  # ========================================================
+  - job_name: node-exporter
+
+    static_configs:
+      - targets:
+          - node-exporter:9100
+
+  # ========================================================
+  # cAdvisor
+  # ========================================================
+  - job_name: cadvisor
+
+    static_configs:
+      - targets:
+          - cadvisor:8080
+
+  # ========================================================
+  # MongoDB Exporter
+  # ========================================================
+  - job_name: mongodb
+
+    static_configs:
+      - targets:
+          - mongodb-exporter:9216
+
+  # ========================================================
+  # Kubernetes API Server
+  # ========================================================
+  - job_name: kubernetes
+
+    kubernetes_sd_configs:
+      - role: node
+
+    scheme: https
+
+    tls_config:
+      insecure_skip_verify: true
+
+  # ========================================================
+  # Kubernetes Pods
+  # ========================================================
+  - job_name: kubernetes-pods
+
+    kubernetes_sd_configs:
+      - role: pod
+
+    relabel_configs:
+      - source_labels:
+          - __meta_kubernetes_pod_annotation_prometheus_io_scrape
+        action: keep
+        regex: "true"
+
+      - source_labels:
+          - __meta_kubernetes_pod_annotation_prometheus_io_path
+        target_label: __metrics_path__
+
+      - source_labels:
+          - __address__
+          - __meta_kubernetes_pod_annotation_prometheus_io_port
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+
+  # ========================================================
+  # Kubernetes Services
+  # ========================================================
+  - job_name: kubernetes-services
+
+    kubernetes_sd_configs:
+      - role: service
+
+    relabel_configs:
+      - source_labels:
+          - __meta_kubernetes_service_annotation_prometheus_io_scrape
+        action: keep
+        regex: "true"
+
+  # ========================================================
+  # Jenkins
+  # ========================================================
+  - job_name: jenkins
+
+    metrics_path: /prometheus
+
+    static_configs:
+      - targets:
+          - jenkins:8080
+
+  # ========================================================
+  # Grafana
+  # ========================================================
+  - job_name: grafana
+
+    metrics_path: /metrics
+
+    static_configs:
+      - targets:
+          - grafana:3000

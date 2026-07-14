@@ -1,0 +1,95 @@
+# ==========================================================
+# CloudForge DevOps Platform
+# Filebeat Configuration
+# ==========================================================
+
+############################
+# Filebeat Inputs
+############################
+
+filebeat.inputs:
+  - type: filestream
+    id: docker-logs
+
+    enabled: true
+
+    paths:
+      - /var/lib/docker/containers/*/*.log
+
+    parsers:
+      - container: ~
+
+############################
+# Processors
+############################
+
+processors:
+  - add_host_metadata: ~
+
+  - add_cloud_metadata: ~
+
+  - add_docker_metadata: ~
+
+############################
+# Elasticsearch Output
+############################
+
+output.elasticsearch:
+  hosts:
+    - http://elasticsearch:9200
+
+  index: "cloudforge-%{+yyyy.MM.dd}"
+
+############################
+# Kibana
+############################
+
+setup.kibana:
+  host: http://kibana:5601
+
+############################
+# Dashboard Setup
+############################
+
+setup.dashboards.enabled: true
+
+############################
+# Logging
+############################
+
+logging.level: info
+
+logging.to_files: true
+
+logging.files:
+  path: /usr/share/filebeat/logs
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+############################
+# Monitoring
+############################
+
+monitoring.enabled: true
+
+monitoring.elasticsearch:
+  hosts:
+    - http://elasticsearch:9200
+
+############################
+# Queue
+############################
+
+queue.mem:
+  events: 4096
+  flush.min_events: 512
+  flush.timeout: 5s
+
+############################
+# Reload
+############################
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
